@@ -1,0 +1,25 @@
+var (
+	score int
+)
+
+func throwBomb() {
+	setXYpos rand(-200, 200), -200
+	show
+	// 向上抛物运动
+	setPhysicsMode DynamicPhysics
+	setGravity 1.5
+	addImpulse rand(-900, 900), rand(-3500, -6000)
+}
+
+onStart => {
+	score = 0
+	throwBomb
+}
+onClick => {
+	broadcast "scoreDelete"
+	die
+}
+
+onCloned => {
+	throwBomb
+}
