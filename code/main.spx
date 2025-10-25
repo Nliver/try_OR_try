@@ -1,0 +1,61 @@
+var (
+	score       int
+	gameRunning bool
+	combo       int
+	lastHitTime float64 // 上次切水果的时间
+)
+
+onStart => {
+	score = 0
+	gameRunning = true
+	combo = 0
+	lastHitTime = 0
+
+	// 只保留一个循环：生成水果
+	forever => {
+		if gameRunning {
+			wait rand(0.3, 0.6)
+			// 随机生成水果或炸弹
+			randomNum := rand(1, 9)
+			if randomNum == 1 {
+				Bomb.clone
+			} else if randomNum == 2 {
+				Apple.clone
+			} else if randomNum == 3 {
+				Orange.clone
+			} else if randomNum == 4 {
+				Mango.clone
+			} else if randomNum == 5 {
+				Grape.clone
+			} else {
+				Watermelon.clone
+			}
+		}
+	}
+}
+
+onMsg "scoreAdd", => {
+	currentTime := timer
+
+	// 如果距离上次切水果不超过1秒，连击数+1
+	if currentTime-lastHitTime <= 1.0 {
+		combo++
+	} else {
+		combo = 1 // 重新开始连击
+	}
+
+	// 记录这次切水果的时间
+	lastHitTime = currentTime
+
+	// 根据连击数计算得分
+	if combo >= 2 {
+		score = score + combo
+	} else {
+		score++
+	}
+}
+
+onMsg "scoreDelete", => {
+	score--
+	combo = 0 // 切到炸弹，连击中断
+}

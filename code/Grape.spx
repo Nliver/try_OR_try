@@ -1,0 +1,47 @@
+var (
+	score int
+)
+
+func throwGrape() {
+	setXYpos rand(-200, 200), -200
+	show
+	// 向上抛物运动
+	setPhysicsMode DynamicPhysics
+	setGravity 1.5
+	addImpulse rand(-900, 900), rand(-3500, -6000)
+}
+
+onStart => {
+	score = 0
+	throwGrape
+}
+
+onClick => {
+	broadcast "scoreAdd"
+	// 切换到切开的造型
+	setCostume "grape_sliced"
+	// 停止物理运动
+	setPhysicsMode NoPhysics
+
+	// 克隆一个作为右半部分
+	clone
+
+	// 当前这个作为左半部分，向左飞
+	addImpulse -300, -200
+	wait 0.5
+	die
+}
+
+onCloned => {
+	// 判断是抛出的新葡萄还是切开的葡萄
+	if costumeName == "grape" {
+		// 新抛出的葡萄
+		throwGrape
+	} else {
+		// 切开的葡萄右半部分，向右飞
+		setPhysicsMode NoPhysics
+		addImpulse 300, -200
+		wait 0.5
+		die
+	}
+}
