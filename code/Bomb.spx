@@ -1,25 +1,65 @@
 var (
-	score int
+	score    int
+	isSliced bool
 )
 
 func throwBomb() {
 	setXYpos rand(-200, 200), -200
 	show
+	isSliced = false
 	// 向上抛物运动
 	setPhysicsMode DynamicPhysics
 	setGravity 1.5
 	addImpulse rand(-900, 900), rand(-3500, -6000)
 }
 
-onStart => {
-	score = 0
-	throwBomb
-}
-onClick => {
-	broadcast "scoreDelete"
+func explodeBomb() {
+	if isSliced {
+		return // 避免重复爆炸
+	}
+
+	isSliced = true
+	broadcast "scoreDelete" // 炸弹爆炸，扣分
+
+	// 停止物理运动
+	setPhysicsMode NoPhysics
+
+	// 可以在这里添加爆炸动画效果
+	// 例如：放大、变色、闪烁等
+	changeSize 0.5                  // 缩小
+	setGraphicEffect ColorEffect, 0 // 变红色
+
+	wait 0.2
 	die
 }
 
-onCloned => {
+onStart => {
+	score = 0
 	throwBomb
+
+	// 检测鼠标划过
+	forever => {
+		// 检查是否被刀光轨迹划过
+		if !isSliced && mousePressed {
+			// 计算鼠标与炸弹的距离
+			distance := distanceTo(Mouse)
+			if distance < 50 {
+				// 如果鼠标在炸弹附近，触发爆炸
+				explodeBomb
+			}
+		}
+		wait 0.01
+	}
+}
+
+onTouchStart "Bomb", => {
+	explodeBomb
+}
+
+onCloned => {
+	// 判断是抛出的新炸弹还是爆炸的炸弹
+	if costumeName == "bomb" {
+		// 新抛出的炸弹
+		throwBomb
+	}
 }

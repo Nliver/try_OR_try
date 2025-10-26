@@ -1,0 +1,47 @@
+var (
+	lifeTime    float64
+	initialSize float64
+)
+
+onStart => {
+	hide
+}
+
+onCloned => {
+	// 设置刀光轨迹的初始位置和外观
+	setXYpos mouseX, mouseY
+	initialSize = rand(1.2, 2.0) // 随机初始大小
+	setSize initialSize
+	show
+
+	// 设置刀光轨迹为白色，带有轻微的蓝色调
+	setGraphicEffect ColorEffect, 180
+
+	// 初始化生命周期
+	lifeTime = 0.4
+
+	// 持续更新位置和透明度
+	forever => {
+		// 更新生命周期
+		lifeTime = lifeTime - 0.02
+
+		// 如果生命周期结束，销毁对象
+		if lifeTime <= 0 {
+			die
+		}
+
+		// 设置透明度效果，实现淡出
+		ghostValue := lifeTime * 100 / 0.4
+		setGraphicEffect GhostEffect, ghostValue
+
+		// 稍微增加大小，模拟扩散效果
+		sizeMultiplier := 1 + (0.4-lifeTime)*1.5
+		setSize initialSize*sizeMultiplier
+
+		// 添加轻微的亮度变化
+		brightness := 100 + (0.4-lifeTime)*50
+		setGraphicEffect BrightnessEffect, brightness
+
+		wait 0.02
+	}
+}
