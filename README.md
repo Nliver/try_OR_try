@@ -5,18 +5,19 @@
 
 ## 游戏Demo演示视频
 
-<video src="http://qupfile.cloudvdn.com/Demo%E6%BC%94%E7%A4%BA.mp4" controls width="100%"></video>
-在线地址：http://qupfile.cloudvdn.com/Demo%E6%BC%94%E7%A4%BA.mp4
-对应github中视频文件：[Demo演示.mp4](./Demo演示.mp4)
+🎥 **在线观看地址**: http://qupfile.cloudvdn.com/%E6%95%B0%E5%AD%97%E6%9E%9C%E5%86%9CDemo%E6%BC%94%E7%A4%BA.mp4
+
+📹 **github视频文件**: [Demo演示.mp4](https://github.com/Nliver/try_OR_try/blob/main/Demo%E6%BC%94%E7%A4%BA.mp4)
 
 ## XBuilder项目发布
 https://x.qiniu.com/project/wx_user_AFMTXo8Q/19
 
 ## 游戏截图
 
-![游戏首页截图](./images/游戏首页.png)
+<img src="./images/游戏首页.png" alt="游戏首页截图" style="zoom:50%;" />
 
-![游戏中画面截图](./images/游戏中画面1.png)
+<img src="./images/游戏中画面1.png" alt="游戏中画面截图" style="zoom:50%;" />
+
 ## 游戏规则
 
 - 屏幕上会不断出现各种水果（西瓜、苹果、桃子、Basaha、香蕉）和炸弹
