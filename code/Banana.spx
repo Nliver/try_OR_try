@@ -39,7 +39,7 @@ func sliceBanana() {
 
 onStart => {
 	score = 0
-	throwBanana
+	hide // 隐藏初始精灵，只通过 clone 生成水果
 }
 
 onTouchStart "Banana", => {

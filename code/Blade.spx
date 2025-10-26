@@ -10,7 +10,7 @@ onStart => {
 onCloned => {
 	// 设置刀光轨迹的初始位置和外观
 	setXYpos mouseX, mouseY
-	initialSize = rand(0.8, 1.5) // 随机初始大小
+	initialSize = rand(0.1, 0.3) // 随机初始大小
 	setSize initialSize
 	show
 
@@ -18,8 +18,8 @@ onCloned => {
 	// setGraphicEffect ColorEffect, 180
 	// setGraphicEffect BrightnessEffect, 150 // 增加亮度，更明显
 	// 金色刀光
-	setGraphicEffect ColorEffect, 30
-	setGraphicEffect BrightnessEffect, 180
+	setGraphicEffect ColorEffect, 0
+	setGraphicEffect BrightnessEffect, 18
 
 	// 初始化生命周期（更长的显示时间）
 	lifeTime = 0.6
@@ -27,7 +27,7 @@ onCloned => {
 	// 持续更新
 	forever => {
 		// 更新生命周期
-		lifeTime = lifeTime - 0.02
+		lifeTime = lifeTime - 0.01
 
 		// 如果生命周期结束，销毁对象
 		if lifeTime <= 0 {

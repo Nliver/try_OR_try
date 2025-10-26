@@ -39,7 +39,7 @@ func sliceBasaha() {
 
 onStart => {
 	score = 0
-	throwBasaha
+	hide // 隐藏初始精灵，只通过 clone 生成水果
 }
 
 onTouchStart "Basaha", => {

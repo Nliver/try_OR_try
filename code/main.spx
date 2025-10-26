@@ -1,125 +1,71 @@
 var (
-	score       int
-	gameRunning bool
-	combo       int
-	lastHitTime float64 // 上次切水果的时间
-	mousePressed bool // 鼠标是否按下
-	mouseTrailX []float64 // 鼠标轨迹X坐标
-	mouseTrailY []float64 // 鼠标轨迹Y坐标
+	score           int
+	gameRunning     bool
+	combo           int
+	lastHitTime     float64 // 上次切水果的时间
+	lastMouseX      float64 // 上次鼠标X位置
+	lastMouseY      float64 // 上次鼠标Y位置
+	wasMousePressed bool    // 上次鼠标是否按下
 )
-
-// 检查水果是否被刀光轨迹划过
-func checkFruitSlice(fruit Sprite, detectionRange float64) {
-	// 检查水果是否存在且可见
-	if fruit.visible {
-		// 计算与水果的距离
-		distance := distanceTo(fruit)
-		
-		// 如果距离小于检测范围，触发切割
-		if distance < detectionRange {
-			// 发送切割消息给水果
-			if fruit.name == "Bomb" {
-				fruit.broadcast "sliceBomb"
-			} else {
-				fruit.broadcast "sliceFruit"
-			}
-		}
-	}
-}
 
 onStart => {
 	score = 0
 	gameRunning = true
 	combo = 0
 	lastHitTime = 0
-	mousePressed = false
-	mouseTrailX = []float64{}
-	mouseTrailY = []float64{}
+	lastMouseX = mouseX
+	lastMouseY = mouseY
+	wasMousePressed = false
 
-	// 监听鼠标按下事件
-	onMouseDown => {
-		mousePressed = true
-		// 清空之前的轨迹
-		mouseTrailX = []float64{mouseX}
-		mouseTrailY = []float64{mouseY}
-		// 创建刀光轨迹
-		Blade.clone
-	}
-	
-	// 监听鼠标释放事件
-	onMouseUp => {
-		mousePressed = false
-	}
-	
-	// 监听鼠标移动事件
+	// 检测鼠标滑动并生成刀光
 	forever => {
+		// 检测鼠标按下
 		if mousePressed {
-			// 记录鼠标轨迹
-			mouseTrailX = append(mouseTrailX, mouseX)
-			mouseTrailY = append(mouseTrailY, mouseY)
-			
-			// 限制轨迹长度，避免内存占用过多
-			if len(mouseTrailX) > 20 {
-				mouseTrailX = mouseTrailX[1:]
-				mouseTrailY = mouseTrailY[1:]
-			}
-			
-			// 只有当鼠标移动了一定距离才创建新的刀光轨迹段
-			if len(mouseTrailX) >= 2 {
-				lastX := mouseTrailX[len(mouseTrailX)-2]
-				lastY := mouseTrailY[len(mouseTrailY)-2]
-				currentX := mouseTrailX[len(mouseTrailX)-1]
-				currentY := mouseTrailY[len(mouseTrailY)-1]
-				
-				// 计算移动距离
-				distance := sqrt((currentX-lastX)*(currentX-lastX) + (currentY-lastY)*(currentY-lastY))
-				
-				// 只有移动距离大于5像素才创建新的轨迹段
-				if distance > 5 {
-					// 创建新的刀光轨迹段
+			if !wasMousePressed {
+				// 刚按下鼠标，记录初始位置
+				lastMouseX = mouseX
+				lastMouseY = mouseY
+				wasMousePressed = true
+				// 创建第一个刀光
+				Blade.clone
+			} else {
+				// 鼠标持续按下，检测移动距离（不开方，直接比较平方）
+				dx := mouseX - lastMouseX
+				dy := mouseY - lastMouseY
+				distanceSquared := dx*dx + dy*dy
+
+				// 如果移动距离超过10像素（100 = 10*10），生成新的刀光
+				// 如果移动距离超过10像素（100 = 10*10），生成新的刀光
+				if distanceSquared > 100 {
 					Blade.clone
+					lastMouseX = mouseX
+					lastMouseY = mouseY
 				}
 			}
+		} else {
+			wasMousePressed = false
 		}
 		wait 0.02
 	}
-	
-	// 检测刀光轨迹与水果的交互
-	forever => {
-		if mousePressed && len(mouseTrailX) >= 2 {
-			// 检查最近的鼠标轨迹点
-			for i := len(mouseTrailX) - 1; i >= max(0, len(mouseTrailX)-5); i-- {
-				// 设置一个临时位置用于距离检测
-				setXYpos mouseTrailX[i], mouseTrailY[i]
-				
-				// 检查与各种水果的距离
-				checkFruitSlice(Apple, 50)
-				checkFruitSlice(Orange, 50)
-				checkFruitSlice(Mango, 50)
-				checkFruitSlice(Grape, 50)
-				checkFruitSlice(Watermelon, 50)
-				checkFruitSlice(Bomb, 50)
-			}
-		}
-		wait 0.02
-	}
+}
 
-	// 只保留一个循环：生成水果
+// 第二个onStart：生成水果
+onStart => {
 	forever => {
 		if gameRunning {
-			wait rand(0.3, 0.6)
+			wait rand(0.5, 1.0)
 			// 随机生成水果或炸弹
-			randomNum := rand(1, 9)
+			randomNum := rand(1, 7)
 			if randomNum == 1 {
 				Bomb.clone
 			} else if randomNum == 2 {
 				Apple.clone
 			} else if randomNum == 3 {
-				Orange.clone
+				Peach.clone
 			} else if randomNum == 4 {
-				Mango.clone
+				Basaha.clone
 			} else if randomNum == 5 {
-				Grape.clone
+				Banana.clone
 			} else {
 				Watermelon.clone
 			}
