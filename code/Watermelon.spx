@@ -69,6 +69,8 @@ onCloned => {
 						distance := distanceTo(Mouse)
 						if distance < 25 {
 							// 如果鼠标在水果附近
+							//水果被切割的声音
+							play "Sound_of_fruit_cutting"
 							sliceWatermelon
 						}
 					}

@@ -22,4 +22,6 @@ onClick => {
 
 	// 通知游戏开始
 	broadcast "gameStart"
+	//开始游戏播放背景音乐
+	play "Original_background_music"
 }
