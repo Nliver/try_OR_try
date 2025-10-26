@@ -46,13 +46,12 @@ func explodeBomb() {
 	die
 }
 
-onStart => {
-	score = 0
-	throwBomb
-}
-
 onTouchStart "Bomb", => {
 	explodeBomb
+}
+
+onStart => {
+	hide // 隐藏初始的炸弹实例
 }
 
 onCloned => {

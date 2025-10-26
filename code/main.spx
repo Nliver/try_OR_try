@@ -10,43 +10,55 @@ var (
 
 onStart => {
 	score = 0
-	gameRunning = true
+	gameRunning = false // 初始状态：游戏未开始
 	combo = 0
 	lastHitTime = 0
 	lastMouseX = mouseX
 	lastMouseY = mouseY
 	wasMousePressed = false
 
+	// 使用"开始"精灵显示开始提示
+	// Start.say "点击屏幕开始游戏", 999
+	Start.setXYpos 0, 0 // 移到屏幕中央
+	Start.show
+
 	// 检测鼠标滑动并生成刀光
 	forever => {
-		// 检测鼠标按下
-		if mousePressed {
-			if !wasMousePressed {
-				// 刚按下鼠标，记录初始位置
-				lastMouseX = mouseX
-				lastMouseY = mouseY
-				wasMousePressed = true
-				// 创建第一个刀光
-				Blade.clone
-			} else {
-				// 鼠标持续按下，检测移动距离（不开方，直接比较平方）
-				dx := mouseX - lastMouseX
-				dy := mouseY - lastMouseY
-				distanceSquared := dx*dx + dy*dy
-
-				// 如果移动距离超过10像素（100 = 10*10），生成新的刀光
-				// 如果移动距离超过10像素（100 = 10*10），生成新的刀光
-				if distanceSquared > 100 {
-					Blade.clone
+		if gameRunning { // 只有游戏开始后才检测刀光
+			// 检测鼠标按下
+			if mousePressed {
+				if !wasMousePressed {
+					// 刚按下鼠标，记录初始位置
 					lastMouseX = mouseX
 					lastMouseY = mouseY
+					wasMousePressed = true
+					// 创建第一个刀光
+					Blade.clone
+				} else {
+					// 鼠标持续按下，检测移动距离（不开方，直接比较平方）
+					dx := mouseX - lastMouseX
+					dy := mouseY - lastMouseY
+					distanceSquared := dx*dx + dy*dy
+
+					// 如果移动距离超过3像素（9 = 3*3），生成新的刀光
+					if distanceSquared > 4 {
+						Blade.clone
+						lastMouseX = mouseX
+						lastMouseY = mouseY
+					}
 				}
+			} else {
+				wasMousePressed = false
 			}
-		} else {
-			wasMousePressed = false
 		}
 		wait 0.02
 	}
+}
+
+// 监听游戏开始消息
+onMsg "gameStart", => {
+	gameRunning = true
+	resetTimer
 }
 
 // 第二个onStart：生成水果
