@@ -9,7 +9,7 @@ func throwWatermelon() {
 	isSliced = false
 	// 向上抛物运动
 	setPhysicsMode DynamicPhysics
-	setGravity 1.5
+	setGravity 6
 	addImpulse rand(-900, 900), rand(-3500, -6000)
 }
 

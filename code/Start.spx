@@ -13,6 +13,10 @@ onClick => {
 	setSize 0.9
 	wait 0.1
 
+	// 恢复大小
+	setSize normalSize
+	wait 0.05
+
 	// 隐藏自己
 	hide
 
