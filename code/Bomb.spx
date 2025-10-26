@@ -9,7 +9,7 @@ func throwBomb() {
 	isSliced = false
 	// 向上抛物运动
 	setPhysicsMode DynamicPhysics
-	setGravity 1.5
+	setGravity 6
 	addImpulse rand(-900, 900), rand(-3500, -6000)
 }
 
@@ -70,6 +70,7 @@ onCloned => {
 					distance := distanceTo(Mouse)
 					if distance < 50 {
 						// 如果鼠标在炸弹附近，触发爆炸
+						play "Sound_of_Bomb"
 						explodeBomb
 					}
 				}
