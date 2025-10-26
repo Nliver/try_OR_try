@@ -1,0 +1,47 @@
+var (
+	lifeTime    float64
+	initialSize float64
+)
+
+onStart => {
+	hide
+}
+
+onCloned => {
+	// 设置刀光轨迹的初始位置和外观
+	setXYpos mouseX, mouseY
+	initialSize = rand(0.2, 0.2) // 随机初始大小
+	setSize initialSize
+	show
+
+	// // 设置刀光颜色为明亮的白色或淡蓝色
+	// setGraphicEffect ColorEffect, 180
+	// setGraphicEffect BrightnessEffect, 150 // 增加亮度，更明显
+	// 金色刀光
+	setGraphicEffect ColorEffect, 0
+	setGraphicEffect BrightnessEffect, 18
+
+	// 初始化生命周期（更长的显示时间）
+	lifeTime = 0.3 // 缩短生命周期，避免刀光残留太久
+
+	// 持续更新
+	forever => {
+		// 更新生命周期
+		lifeTime = lifeTime - 0.01
+
+		// 如果生命周期结束，销毁对象
+		if lifeTime <= 0 {
+			die
+		}
+
+		// 不设置透明度，保持完全不透明
+		// 可以选择：稍微缩小尺寸，模拟轨迹收缩效果
+		sizeMultiplier := 1 - (0.6-lifeTime)*0.3
+		if sizeMultiplier < 0.5 {
+			sizeMultiplier = 0.5
+		}
+		setSize initialSize*sizeMultiplier
+
+		wait 0.02
+	}
+}

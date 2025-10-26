@@ -1,0 +1,87 @@
+var (
+	score    int
+	isSliced bool
+)
+
+func throwBomb() {
+	setXYpos rand(-200, 200), -200
+	show
+	isSliced = false
+	// 向上抛物运动
+	setPhysicsMode DynamicPhysics
+	setGravity 6
+	addImpulse rand(-900, 900), rand(-3500, -6000)
+}
+
+func explodeBomb() {
+	if isSliced {
+		return // 避免重复爆炸
+	}
+
+	isSliced = true
+	broadcast "loseLife"    // 炸弹爆炸，减少生命值
+	broadcast "scoreDelete" // 炸弹爆炸，扣分
+
+	// 停止物理运动
+	setPhysicsMode NoPhysics
+
+	// 爆炸特效：快速放大并变红
+	setGraphicEffect ColorEffect, 0        // 变红色
+	setGraphicEffect BrightnessEffect, 150 // 增加亮度
+
+	// 爆炸动画：先放大
+	changeSize 1.5
+	wait 0.1
+
+	// 然后快速缩小并闪烁
+	changeSize -1
+	setGraphicEffect BrightnessEffect, 200
+	wait 0.05
+
+	setGraphicEffect BrightnessEffect, 50
+	wait 0.05
+
+	setGraphicEffect BrightnessEffect, 200
+	wait 0.05
+
+	die
+}
+
+onTouchStart "Bomb", => {
+	explodeBomb
+}
+
+onStart => {
+	hide // 隐藏初始的炸弹实例
+}
+
+onCloned => {
+	// 判断是抛出的新炸弹
+	if costumeName == "bomb" {
+		// 新抛出的炸弹
+		throwBomb
+
+		// 检测刀光轨迹的循环（只在新抛出的炸弹上运行）
+		forever => {
+			// 只有在可见、未爆炸、且在屏幕内时才检测
+			if visible && !isSliced && ypos > -250 && ypos < 250 {
+				if mousePressed {
+					// 计算鼠标与炸弹的距离
+					distance := distanceTo(Mouse)
+					if distance < 50 {
+						// 如果鼠标在炸弹附近，触发爆炸
+						play "Sound_of_Bomb"
+						explodeBomb
+					}
+				}
+			}
+
+			// 如果已爆炸或飞出屏幕，停止检测
+			if isSliced || ypos < -250 {
+				return
+			}
+
+			wait 0.01
+		}
+	}
+}
