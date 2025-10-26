@@ -42,10 +42,6 @@ onStart => {
 	hide // 隐藏初始精灵，只通过 clone 生成水果
 }
 
-onTouchStart "Peach", => {
-	slicePeach
-}
-
 onCloned => {
 	// 判断是抛出的新西瓜还是切开的西瓜
 	if costumeName == "peach" {
@@ -71,7 +67,7 @@ onCloned => {
 					if mousePressed {
 						// 计算鼠标与水果的距离
 						distance := distanceTo(Mouse)
-						if distance < 50 {
+						if distance < 25 {
 							// 如果鼠标在水果附近
 							slicePeach
 						}

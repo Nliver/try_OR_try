@@ -1,0 +1,121 @@
+var (
+	isSliced      bool
+	isDisplayIcon bool // 是否是显示用的生命值图标
+	iconIndex     int  // 图标索引（第几个生命值图标）
+)
+
+func throwLife() {
+	setXYpos rand(-200, 200), -200
+	show
+	isSliced = false
+	isDisplayIcon = false
+	// 向上抛物运动
+	setPhysicsMode DynamicPhysics
+	setGravity 1.5
+	addImpulse rand(-900, 900), rand(-3500, -6000)
+}
+
+func collectLife() {
+	if isSliced {
+		return // 避免重复收集
+	}
+
+	isSliced = true
+	broadcast "gainLife" // 增加生命值
+
+	// 停止物理运动
+	setPhysicsMode NoPhysics
+
+	// 收集特效：快速放大并发光
+	setGraphicEffect BrightnessEffect, 150
+
+	// 放大动画
+	changeSize 1
+	wait 0.1
+
+	// 消失
+	die
+}
+
+onStart => {
+	hide // 隐藏初始精灵
+}
+
+onTouchStart "Life", => {
+	if !isDisplayIcon {
+		collectLife
+	}
+}
+
+onCloned data => {
+	// 判断是抛出的生命值还是显示图标
+	if costumeName == "life" {
+		// 检查是否传入了 data（用于创建显示图标）
+		// 如果 clone 时传入了数字参数，说明是创建显示图标
+		iconNum := 0
+
+		// 尝试将 data 转换为整数
+		// 在 spx 中，clone 传入的整数参数可以直接作为 int 使用
+		if data != nil {
+			// 使用类型断言
+			switch v := data.(type) {
+			case int:
+				iconNum = v
+			case float64:
+				iconNum = int(v)
+			}
+		}
+
+		if iconNum > 0 {
+			// 这是生命值显示图标
+			isDisplayIcon = true
+			iconIndex = iconNum
+
+			// 设置图标位置（右上角）
+			baseX := 180.0
+			spacing := 30.0
+			setXYpos baseX+float64(iconIndex-1)*spacing, 150
+			setSize 0.5 // 图标稍微小一点
+			show
+		} else {
+			// 这是新抛出的生命值
+			isDisplayIcon = false
+			throwLife
+
+			// 检测刀光轨迹的循环
+			forever => {
+				// 只有在可见、未被收集、且在屏幕内时才检测
+				if visible && !isSliced && ypos > -250 && ypos < 250 {
+					if mousePressed {
+						// 计算鼠标与生命值的距离
+						distance := distanceTo(Mouse)
+						if distance < 25 {
+							// 如果鼠标在生命值附近
+							collectLife
+						}
+					}
+				}
+
+				// 如果已被收集或飞出屏幕，停止检测
+				if isSliced || ypos < -250 {
+					return
+				}
+
+				wait 0.01
+			}
+		}
+	}
+}
+
+// 监听更新生命值显示的消息
+onMsg "updateLives", => {
+	// 如果是显示图标，根据当前生命值决定是否显示
+	if isDisplayIcon {
+		currentLives := lives // 直接使用 Stage 的 lives 变量
+		if iconIndex <= currentLives {
+			show
+		} else {
+			hide
+		}
+	}
+}

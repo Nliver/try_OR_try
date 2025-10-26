@@ -1,6 +1,8 @@
 var (
 	score           int
 	gameRunning     bool
+	lives           int // 生命值
+	maxLives        int // 最大生命值
 	combo           int
 	lastHitTime     float64 // 上次切水果的时间
 	lastMouseX      float64 // 上次鼠标X位置
@@ -8,42 +10,54 @@ var (
 	wasMousePressed bool    // 上次鼠标是否按下
 )
 
+// 更新生命值显示
+func updateLivesDisplay() {
+	// 广播消息让 Life 精灵更新显示（不需要传递数据）
+	broadcast "updateLives"
+}
+
 onStart => {
 	score = 0
-	gameRunning = true
+	lives = 3           // 初始3条命
+	maxLives = 3        // 最大3条命
+	gameRunning = false // 初始状态：游戏未开始
 	combo = 0
 	lastHitTime = 0
-	lastMouseX = mouseX
-	lastMouseY = mouseY
 	wasMousePressed = false
+
+	// 使用"开始"精灵显示开始提示
+	// Start.say "点击屏幕开始游戏", 999
+	Start.setXYpos 0, 0 // 移到屏幕中央
+	Start.show
 
 	// 检测鼠标滑动并生成刀光
 	forever => {
-		// 检测鼠标按下
-		if mousePressed {
-			if !wasMousePressed {
-				// 刚按下鼠标，记录初始位置
-				lastMouseX = mouseX
-				lastMouseY = mouseY
-				wasMousePressed = true
-				// 创建第一个刀光
-				Blade.clone
-			} else {
-				// 鼠标持续按下，检测移动距离（不开方，直接比较平方）
-				dx := mouseX - lastMouseX
-				dy := mouseY - lastMouseY
-				distanceSquared := dx*dx + dy*dy
-
-				// 如果移动距离超过10像素（100 = 10*10），生成新的刀光
-				// 如果移动距离超过10像素（100 = 10*10），生成新的刀光
-				if distanceSquared > 100 {
-					Blade.clone
+		if gameRunning { // 只有游戏开始后才检测刀光
+			// 检测鼠标按下
+			if mousePressed {
+				if !wasMousePressed {
+					// 刚按下鼠标，记录初始位置
 					lastMouseX = mouseX
 					lastMouseY = mouseY
+					wasMousePressed = true
+					// 创建第一个刀光
+					Blade.clone
+				} else {
+					// 鼠标持续按下，检测移动距离（不开方，直接比较平方）
+					dx := mouseX - lastMouseX
+					dy := mouseY - lastMouseY
+					distanceSquared := dx*dx + dy*dy
+
+					// 如果移动距离超过3像素（9 = 3*3），生成新的刀光
+					if distanceSquared > 4 {
+						Blade.clone
+						lastMouseX = mouseX
+						lastMouseY = mouseY
+					}
 				}
+			} else {
+				wasMousePressed = false
 			}
-		} else {
-			wasMousePressed = false
 		}
 		wait 0.02
 	}
@@ -53,23 +67,69 @@ onStart => {
 onStart => {
 	forever => {
 		if gameRunning {
-			wait rand(0.5, 1.0)
-			// 随机生成水果或炸弹
-			randomNum := rand(1, 7)
+			wait rand(0.2, 0.4)
+			// 随机生成水果、炸弹或生命值
+			randomNum := rand(1, 10)
+
 			if randomNum == 1 {
+				// 10% 概率：炸弹
 				Bomb.clone
-			} else if randomNum == 2 {
+			} else if randomNum == 2 || randomNum == 7 {
+				// 20% 概率：苹果（最常见的水果）
 				Apple.clone
 			} else if randomNum == 3 {
+				// 10% 概率：桃子
 				Peach.clone
 			} else if randomNum == 4 {
+				// 10% 概率：Basaha
 				Basaha.clone
 			} else if randomNum == 5 {
+				// 10% 概率：香蕉
 				Banana.clone
-			} else {
+			} else if randomNum == 6 || randomNum == 8 || randomNum == 9 {
+				// 30% 概率：西瓜（第二常见的水果）
 				Watermelon.clone
+			} else if randomNum == 10 {
+				// 10% 概率：生命值
+				Life.clone
 			}
 		}
+	}
+}
+
+// 监听游戏开始消息
+onMsg "gameStart", => {
+	gameRunning = true
+	resetTimer
+
+	// 创建生命值显示图标
+	// 第1个生命值图标
+	Life.clone 1
+	// 第2个生命值图标
+	Life.clone 2
+	// 第3个生命值图标
+	Life.clone 3
+
+	updateLivesDisplay() // 显示初始生命值
+}
+
+// 监听生命值减少消息
+onMsg "loseLife", => {
+	lives--
+	updateLivesDisplay()
+
+	// 如果生命值小于1，游戏结束
+	if lives < 1 {
+		gameRunning = false
+		broadcast "gameOver"
+	}
+}
+
+// 监听生命值增加消息
+onMsg "gainLife", => {
+	if lives < maxLives {
+		lives++
+		updateLivesDisplay()
 	}
 }
 

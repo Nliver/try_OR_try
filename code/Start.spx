@@ -1,0 +1,21 @@
+var (
+	normalSize float64
+)
+
+onStart => {
+	normalSize = 1.0
+	setSize normalSize
+}
+
+// 监听"开始"按钮的点击事件
+onClick => {
+	// 点击时缩小
+	setSize 0.9
+	wait 0.1
+
+	// 隐藏自己
+	hide
+
+	// 通知游戏开始
+	broadcast "gameStart"
+}

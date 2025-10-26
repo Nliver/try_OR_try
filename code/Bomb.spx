@@ -19,6 +19,7 @@ func explodeBomb() {
 	}
 
 	isSliced = true
+	broadcast "loseLife"    // 炸弹爆炸，减少生命值
 	broadcast "scoreDelete" // 炸弹爆炸，扣分
 
 	// 停止物理运动
@@ -46,13 +47,12 @@ func explodeBomb() {
 	die
 }
 
-onStart => {
-	score = 0
-	throwBomb
-}
-
 onTouchStart "Bomb", => {
 	explodeBomb
+}
+
+onStart => {
+	hide // 隐藏初始的炸弹实例
 }
 
 onCloned => {
