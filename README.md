@@ -5,7 +5,7 @@
 
 ## 游戏Demo演示视频
 
-<video src="./Demo演示.mp4" controls width="100%"></video>
+<video src="http://qupfile.cloudvdn.com/Demo%E6%BC%94%E7%A4%BA.mp4" controls width="100%"></video>
 在线地址：http://qupfile.cloudvdn.com/Demo%E6%BC%94%E7%A4%BA.mp4
 对应github中视频文件：[Demo演示.mp4](./Demo演示.mp4)
 
