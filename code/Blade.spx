@@ -10,7 +10,7 @@ onStart => {
 onCloned => {
 	// 设置刀光轨迹的初始位置和外观
 	setXYpos mouseX, mouseY
-	initialSize = rand(0.1, 0.3) // 随机初始大小
+	initialSize = rand(0.2, 0.2) // 随机初始大小
 	setSize initialSize
 	show
 
@@ -22,7 +22,7 @@ onCloned => {
 	setGraphicEffect BrightnessEffect, 18
 
 	// 初始化生命周期（更长的显示时间）
-	lifeTime = 0.6
+	lifeTime = 0.3 // 缩短生命周期，避免刀光残留太久
 
 	// 持续更新
 	forever => {
