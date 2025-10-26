@@ -10,17 +10,21 @@ onStart => {
 onCloned => {
 	// 设置刀光轨迹的初始位置和外观
 	setXYpos mouseX, mouseY
-	initialSize = rand(1.2, 2.0) // 随机初始大小
+	initialSize = rand(0.8, 1.5) // 随机初始大小
 	setSize initialSize
 	show
 
-	// 设置刀光轨迹为白色，带有轻微的蓝色调
-	setGraphicEffect ColorEffect, 180
+	// // 设置刀光颜色为明亮的白色或淡蓝色
+	// setGraphicEffect ColorEffect, 180
+	// setGraphicEffect BrightnessEffect, 150 // 增加亮度，更明显
+	// 金色刀光
+	setGraphicEffect ColorEffect, 30
+	setGraphicEffect BrightnessEffect, 180
 
-	// 初始化生命周期
-	lifeTime = 0.4
+	// 初始化生命周期（更长的显示时间）
+	lifeTime = 0.6
 
-	// 持续更新位置和透明度
+	// 持续更新
 	forever => {
 		// 更新生命周期
 		lifeTime = lifeTime - 0.02
@@ -30,17 +34,13 @@ onCloned => {
 			die
 		}
 
-		// 设置透明度效果，实现淡出
-		ghostValue := lifeTime * 100 / 0.4
-		setGraphicEffect GhostEffect, ghostValue
-
-		// 稍微增加大小，模拟扩散效果
-		sizeMultiplier := 1 + (0.4-lifeTime)*1.5
+		// 不设置透明度，保持完全不透明
+		// 可以选择：稍微缩小尺寸，模拟轨迹收缩效果
+		sizeMultiplier := 1 - (0.6-lifeTime)*0.3
+		if sizeMultiplier < 0.5 {
+			sizeMultiplier = 0.5
+		}
 		setSize initialSize*sizeMultiplier
-
-		// 添加轻微的亮度变化
-		brightness := 100 + (0.4-lifeTime)*50
-		setGraphicEffect BrightnessEffect, brightness
 
 		wait 0.02
 	}
