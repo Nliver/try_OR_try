@@ -23,12 +23,3 @@ onClick => {
 	// 通知游戏开始
 	broadcast "gameStart"
 }
-
-// 监听游戏结束消息
-onMsg "gameOver", => {
-	// 显示 Game Over
-	setCostume "默认"
-	setXYpos 0, 0
-	setSize 1.2
-	show
-}

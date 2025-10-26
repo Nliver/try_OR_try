@@ -4,9 +4,9 @@
 
 ## 游戏截图
 
-![游戏首页截图](http://qupfile.cloudvdn.com/%E9%A6%96%E9%A1%B5.png)
+![游戏首页截图](http://qupfile.cloudvdn.com/%E6%B8%B8%E6%88%8F%E9%A6%96%E9%A1%B5.png)
 
-![游戏中画面截图](http://qupfile.cloudvdn.com/%E6%B8%B8%E6%88%8F%E4%B8%AD%E7%94%BB%E9%9D%A2.png)
+![游戏中画面截图](http://qupfile.cloudvdn.com/%E6%B8%B8%E6%88%8F%E4%B8%AD%E7%94%BB%E9%9D%A21.png)
 ## 游戏规则
 
 - 屏幕上会不断出现各种水果（西瓜、苹果、桃子、Basaha、香蕉）和炸弹
